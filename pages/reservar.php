@@ -8,6 +8,7 @@ require_once(__DIR__ . '/../class/Pista.php');
 require_once(__DIR__ . '/../class/Reserva.php');
 
 // VALIDATION
+$usuari_id = explode("/", $_SESSION['usuario'])[0];
 $diaErr = $horaErr = $tipusErr = $dia = $hora = "";
 $tipus = $usuari_id = 0;
 $validForm = $validFormVacios = true;
@@ -120,7 +121,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <?php
                     $pista = new Pista();
                     $pistes = $pista->getPistes()->data;
-                    echo $pistes[0]->id;
                     for ($i = 0; $i < count($pistes); $i++) {
                         if ($pistes[$i]->id == $_POST["tipus"]) {
                             echo '<option value="' . $pistes[$i]->id . '" selected >' . $pistes[$i]->type . '</option>';

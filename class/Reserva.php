@@ -50,6 +50,12 @@ class Reserva extends Connexio
         }
         $result->free();
 
+        /*
+        for($i=0;$i<count($all_reserves);$i++){
+            echo $all_reserves[$i]->id_pista;
+        }
+        */
+
         $this->response->setData($all_reserves);
         return $this->response;
     }
@@ -77,16 +83,22 @@ class Reserva extends Connexio
         $all_reserves = array();
         if ($result->num_rows > 0) {
             while ($fila = $result->fetch_assoc()) {
-                // Filtrar per reserves actives
-                if ($fila["data"] > date("Y-m-d")) {
+                // Filtrar per reserves actives (que son futuras)
+                // if ($fila["data"] > date("Y-m-d")) {
                     array_push($all_reserves, new ReservaSingleInstance($fila["data"], $fila["idpista"], $fila["idusuari"]));
-                }
+                // }
             }
             $this->response->setCorrectOperation(true);
         } else {
             $this->response->setCorrectOperation(false);
         }
         $result->free();
+
+        /*
+        for($i=0;$i<count($all_reserves);$i++){
+            echo $all_reserves[$i]->id_pista;
+        }
+        */
 
         $this->response->setData($all_reserves);
         return $this->response;

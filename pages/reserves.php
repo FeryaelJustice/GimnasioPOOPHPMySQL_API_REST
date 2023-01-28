@@ -16,20 +16,22 @@ $id_usuario = explode("/", $_SESSION['usuario'])[0];
 $pistes = $pista->getPistes()->data;
 
 // Get reservas del usuari
-$reservasUsuario = $res->reservesPerUsuari($id_usuario)->data;
+$reservasUsuario = $res->reservesPerUsuari($id_usuario);
 
-/* Testing
-for ($i=0; $i<count($all_reserves);$i++){
-    echo $$all_reserves[$i]->date;
-}*/
-
+/*
+for($i=0;$i<count($reservasUsuario->data);$i++){
+    echo $reservasUsuario->data[$i]->id_pista;
+}
+*/
+//echo getStartOfWeekDate($reservasUsuario->data[0]->date) . ' / ';
+//echo getEndOfWeekDate($reservasUsuario->data[0]->date);
 // Calculate the date of Monday for the current week
-$monday = date('Y-m-d', strtotime(getStartOfWeekDate($reservasUsuario[0]->date)));
+$monday = date('Y-m-d', strtotime(getStartOfWeekDate($reservasUsuario->data[0]->date)));
 // Calculate the date of Friday for the current week
-$friday = date('Y-m-d', strtotime(getEndOfWeekDate($reservasUsuario[0]->date)));
+$friday = date('Y-m-d', strtotime(getEndOfWeekDate($reservasUsuario->data[0]->date)));
 
 // Retrieve the bookings for this week
-$bookings = $res->llistaReserves($monday, $friday);
+$bookings = $res->llistaReserves($monday, $friday)->data;
 
 // Create an array to store the bookings for each day
 $bookingsByDay = array();
@@ -39,7 +41,7 @@ foreach ($bookings as $booking) {
     if (!isset($bookingsByDay[date('Y-m-d', strtotime($booking->date))])) {
         $bookingsByDay[date('Y-m-d', strtotime($booking->date))] = array();
     }
-    $bookingsByDay[date('Y-m-d', strtotime($booking->date))][] = $booking;
+    array_push($bookingsByDay[date('Y-m-d', strtotime($booking->date))], $booking);
 }
 
 // Check bookings in this week (only testing, have to comment)
@@ -100,18 +102,20 @@ foreach ($bookingsByDay as $booki) {
                             $monday = date('Y-m-d', strtotime($monday));
                             // echo $monday;
                             if (isset($bookingsByDay[$monday])) {
-                                foreach ($bookingsByDay[$monday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "16") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$monday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "16") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -123,18 +127,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Tuesday
                             $tuesday = date('Y-m-d', strtotime('+1 day', strtotime($monday)));
                             if (isset($bookingsByDay[$tuesday])) {
-                                foreach ($bookingsByDay[$tuesday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "16") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$tuesday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "16") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -146,18 +152,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Wednesday
                             $wednesday = date('Y-m-d', strtotime('+2 day', strtotime($monday)));
                             if (isset($bookingsByDay[$wednesday])) {
-                                foreach ($bookingsByDay[$wednesday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "16") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$wednesday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "16") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -169,18 +177,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Thursday
                             $thursday = date('Y-m-d', strtotime('+3 day', strtotime($monday)));
                             if (isset($bookingsByDay[$thursday])) {
-                                foreach ($bookingsByDay[$thursday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "16") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$thursday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "16") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -192,18 +202,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Friday
                             $friday = date('Y-m-d', strtotime('+4 day', strtotime($monday)));
                             if (isset($bookingsByDay[$friday])) {
-                                foreach ($bookingsByDay[$friday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "16") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$friday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "16") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -219,18 +231,20 @@ foreach ($bookingsByDay as $booki) {
                             $monday = date('Y-m-d', strtotime($monday));
                             // echo $monday;
                             if (isset($bookingsByDay[$monday])) {
-                                foreach ($bookingsByDay[$monday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "17") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$monday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "17") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -242,18 +256,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Tuesday
                             $tuesday = date('Y-m-d', strtotime('+1 day', strtotime($monday)));
                             if (isset($bookingsByDay[$tuesday])) {
-                                foreach ($bookingsByDay[$tuesday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "17") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$tuesday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "17") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -265,18 +281,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Wednesday
                             $wednesday = date('Y-m-d', strtotime('+2 day', strtotime($monday)));
                             if (isset($bookingsByDay[$wednesday])) {
-                                foreach ($bookingsByDay[$wednesday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "17") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$wednesday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "17") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -288,18 +306,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Thursday
                             $thursday = date('Y-m-d', strtotime('+3 day', strtotime($monday)));
                             if (isset($bookingsByDay[$thursday])) {
-                                foreach ($bookingsByDay[$thursday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "17") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$thursday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "17") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -311,18 +331,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Friday
                             $friday = date('Y-m-d', strtotime('+4 day', strtotime($monday)));
                             if (isset($bookingsByDay[$friday])) {
-                                foreach ($bookingsByDay[$friday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "17") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$friday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "17") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -338,18 +360,20 @@ foreach ($bookingsByDay as $booki) {
                             $monday = date('Y-m-d', strtotime($monday));
                             // echo $monday;
                             if (isset($bookingsByDay[$monday])) {
-                                foreach ($bookingsByDay[$monday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "18") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$monday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "18") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -361,18 +385,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Tuesday
                             $tuesday = date('Y-m-d', strtotime('+1 day', strtotime($monday)));
                             if (isset($bookingsByDay[$tuesday])) {
-                                foreach ($bookingsByDay[$tuesday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "18") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$tuesday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "18") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -384,18 +410,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Wednesday
                             $wednesday = date('Y-m-d', strtotime('+2 day', strtotime($monday)));
                             if (isset($bookingsByDay[$wednesday])) {
-                                foreach ($bookingsByDay[$wednesday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "18") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$wednesday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "18") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -407,18 +435,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Thursday
                             $thursday = date('Y-m-d', strtotime('+3 day', strtotime($monday)));
                             if (isset($bookingsByDay[$thursday])) {
-                                foreach ($bookingsByDay[$thursday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "18") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$thursday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "18") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -430,18 +460,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Friday
                             $friday = date('Y-m-d', strtotime('+4 day', strtotime($monday)));
                             if (isset($bookingsByDay[$friday])) {
-                                foreach ($bookingsByDay[$friday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "18") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$friday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "18") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -457,18 +489,20 @@ foreach ($bookingsByDay as $booki) {
                             $monday = date('Y-m-d', strtotime($monday));
                             // echo $monday;
                             if (isset($bookingsByDay[$monday])) {
-                                foreach ($bookingsByDay[$monday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "19") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$monday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "19") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -480,18 +514,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Tuesday
                             $tuesday = date('Y-m-d', strtotime('+1 day', strtotime($monday)));
                             if (isset($bookingsByDay[$tuesday])) {
-                                foreach ($bookingsByDay[$tuesday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "19") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$tuesday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "19") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -503,18 +539,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Wednesday
                             $wednesday = date('Y-m-d', strtotime('+2 day', strtotime($monday)));
                             if (isset($bookingsByDay[$wednesday])) {
-                                foreach ($bookingsByDay[$wednesday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "19") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$wednesday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "19") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -526,18 +564,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Thursday
                             $thursday = date('Y-m-d', strtotime('+3 day', strtotime($monday)));
                             if (isset($bookingsByDay[$thursday])) {
-                                foreach ($bookingsByDay[$thursday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "19") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$thursday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "19") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -549,18 +589,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Friday
                             $friday = date('Y-m-d', strtotime('+4 day', strtotime($monday)));
                             if (isset($bookingsByDay[$friday])) {
-                                foreach ($bookingsByDay[$friday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "19") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$friday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "19") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -576,18 +618,20 @@ foreach ($bookingsByDay as $booki) {
                             $monday = date('Y-m-d', strtotime($monday));
                             // echo $monday;
                             if (isset($bookingsByDay[$monday])) {
-                                foreach ($bookingsByDay[$monday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "20") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$monday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "20") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -599,18 +643,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Tuesday
                             $tuesday = date('Y-m-d', strtotime('+1 day', strtotime($monday)));
                             if (isset($bookingsByDay[$tuesday])) {
-                                foreach ($bookingsByDay[$tuesday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "20") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$tuesday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "20") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -622,18 +668,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Wednesday
                             $wednesday = date('Y-m-d', strtotime('+2 day', strtotime($monday)));
                             if (isset($bookingsByDay[$wednesday])) {
-                                foreach ($bookingsByDay[$wednesday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "20") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$wednesday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "20") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -645,18 +693,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Thursday
                             $thursday = date('Y-m-d', strtotime('+3 day', strtotime($monday)));
                             if (isset($bookingsByDay[$thursday])) {
-                                foreach ($bookingsByDay[$thursday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "20") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$thursday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "20") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
@@ -668,18 +718,20 @@ foreach ($bookingsByDay as $booki) {
                             // Display the track name for each booking on Friday
                             $friday = date('Y-m-d', strtotime('+4 day', strtotime($monday)));
                             if (isset($bookingsByDay[$friday])) {
-                                foreach ($bookingsByDay[$friday] as $booking) {
-                                    if (date('H', strtotime($booking->date)) == "20") {
-                                        $nomPista = "";
-                                        foreach ($pistes as $key => $value) {
-                                            if ($booking->id_pista == $key) {
-                                                $nomPista = $value;
+                                foreach ($bookingsByDay[$friday] as $bookingsDay) {
+                                    foreach ($bookingsDay as $booking) {
+                                        if (date('H', strtotime($bookingsDay->date)) == "20") {
+                                            $nomPista = "";
+                                            foreach ($pistes as $pista) {
+                                                if ($bookingsDay->id_pista == $pista->id) {
+                                                    $nomPista = $pista->type;
+                                                }
                                             }
-                                        }
-                                        if ($id_usuario == $booking->id_client) {
-                                            echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
-                                        } else {
-                                            echo "<p>" . $nomPista . "</p><br>";
+                                            if ($id_usuario == $bookingsDay->id_client) {
+                                                echo "<strong style='color:red'>" . $nomPista . "(TEVA)</strong><br>";
+                                            } else {
+                                                echo "<p>" . $nomPista . "</p><br>";
+                                            }
                                         }
                                     }
                                 }
